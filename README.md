@@ -1,1 +1,1 @@
-# CrossPlatformFakeNewsDetection
+# CrossDomainFakeNewsDetection
