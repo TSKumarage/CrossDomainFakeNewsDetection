@@ -28,9 +28,13 @@ pip install nltk
 One time downloads for nltk
 
 ```
-nltk.download('stopwords')
+- nltk.download('stopwords')
 ```
 
+Pycontractions
+```
+pip install pycontractions
+```
 
 ### Run Scripts
 
