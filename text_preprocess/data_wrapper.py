@@ -44,4 +44,12 @@ def get_data_repo_path(file_name):
     return rel_path
 
 
+def get_google_word2vec_path():
+    code_dir = os.path.dirname(__file__)  # absolute dir
+
+    rel_path = os.path.join(code_dir, "text_data", "GoogleNews-vectors-negative300.bin")
+
+    return rel_path
+
+
 
