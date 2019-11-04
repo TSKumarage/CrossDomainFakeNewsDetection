@@ -6,31 +6,32 @@ Project : SMM Project 2
 Task : Text preprocessor : Cleaning and pre-processing news data
 
 """
-from text_preprocess import data_wrapper as dt
-from text_preprocess import contractions as ct
-import nltk
-from nltk.tag import pos_tag
-from sklearn.feature_extraction.text import TfidfVectorizer
-import pandas as pd
-import numpy as np
-from nltk.corpus import stopwords
-import unicodedata
 import re
-from pycontractions import Contractions
+import unicodedata
+
+import nltk
+from nltk.corpus import stopwords
+from nltk.tag import pos_tag
+from text_vectorization import tfidf_vectorization
+from text_preprocess import contractions as ct
+from text_preprocess import data_wrapper as dt
+
+
+# from pycontractions import Contractions
 
 
 class PreProcess:
-    def __init__(self,special_chars_norm=False, accented_norm=False, contractions_norm=False,
+    def __init__(self, special_chars_norm=False, accented_norm=False, contractions_norm=False,
                  stemming_norm=False, lemma_norm=False, stopword_norm=False, proper_norm=False):
         self.special_chars_norm = special_chars_norm
         self.accented_norm = accented_norm
         self.contractions_norm = contractions_norm
-        self.stemming_norm =stemming_norm
+        self.stemming_norm = stemming_norm
         self.lemma_norm = lemma_norm
         self.stopword_norm = stopword_norm
         self.proper_norm = proper_norm
 
-    def special_char_remove(self, data, remove_digits=False): # Remove special characters
+    def special_char_remove(self, data, remove_digits=False):  # Remove special characters
         tokens = self.tokenization(data)
         special_char_norm_data = []
 
@@ -73,7 +74,7 @@ class PreProcess:
             contraction_norm_data = cont.expand_texts(data, precise=True)
             return contraction_norm_data
 
-        else:   # Simple contraction removal based on pre-defined set of contractions
+        else:  # Simple contraction removal based on pre-defined set of contractions
             contraction_mapping = ct.CONTRACTION_MAP
             contractions_pattern = re.compile('({})'.format('|'.join(contraction_mapping.keys())),
                                               flags=re.IGNORECASE | re.DOTALL)
@@ -142,7 +143,6 @@ class PreProcess:
     def remove_proper_nouns(self, data):
         common_words = []
         data = self.tokenization(data)
-
         for i in range(len(data)):
             tagged_sent = pos_tag(data[i])
             proper_nouns = [word for word, pos in tagged_sent if pos == 'NNP']
@@ -156,11 +156,9 @@ class PreProcess:
 
     def tokenization(self, data):
         tokens = []
-
         for i in range(len(data)):
             tokenizer = nltk.tokenize.WhitespaceTokenizer()
             tokens.append(tokenizer.tokenize(data[i]))
-
         return tokens
 
     def fit(self, data):
@@ -189,14 +187,17 @@ class PreProcess:
 
 
 def main():
-    data = dt.read_data('gossipcop_content_no_ignore',type="numpy")
-    new_data = data[0:1, 2]
+    data = dt.read_data('gossipcop_content_no_ignore', type="numpy")
+    new_data = data[:, 2]
+    new_data = new_data[0:10]
     print(new_data)
     print()
-    p = PreProcess(lemma_norm=False, proper_norm=False, stopword_norm=False,
-                   accented_norm=True, special_chars_norm=True, contractions_norm=True)
+    p = PreProcess(lemma_norm=True, proper_norm=True, stopword_norm=True,
+                   accented_norm=False, special_chars_norm=False, contractions_norm=False)
     pre_processed_data = p.fit(new_data)
-    print(pre_processed_data[0])
+    print(pre_processed_data)
+    tf_idf_dict = tfidf_vectorization.tf_idf(pre_processed_data)
+    print(tf_idf_dict)
 
 
 if __name__ == '__main__':
