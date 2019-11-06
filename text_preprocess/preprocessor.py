@@ -12,7 +12,8 @@ import unicodedata
 import nltk
 from nltk.corpus import stopwords
 from nltk.tag import pos_tag
-from text_vectorization import tfidf_vectorization
+from text_vectorization import ngram_vectorization
+from text_vectorization import word_embed
 from text_preprocess import contractions as ct
 from text_preprocess import data_wrapper as dt
 
@@ -189,15 +190,16 @@ class PreProcess:
 def main():
     data = dt.read_data('gossipcop_content_no_ignore', type="numpy")
     new_data = data[:, 2]
-    new_data = new_data[0:10]
+    new_data = new_data[0:3]
     print(new_data)
     print()
     p = PreProcess(lemma_norm=True, proper_norm=True, stopword_norm=True,
-                   accented_norm=False, special_chars_norm=False, contractions_norm=False)
+                   accented_norm=True, special_chars_norm=True, contractions_norm=False)
     pre_processed_data = p.fit(new_data)
     print(pre_processed_data)
-    tf_idf_dict = tfidf_vectorization.tf_idf(pre_processed_data)
-    print(tf_idf_dict)
+    ng = ngram_vectorization.Ngram(pos=False, ngram=True)
+    print(ng.fit(pre_processed_data, 2))
+
 
 
 if __name__ == '__main__':
