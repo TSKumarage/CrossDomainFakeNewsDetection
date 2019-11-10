@@ -190,16 +190,20 @@ class PreProcess:
 def main():
     data = dt.read_data('gossipcop_content_no_ignore', type="numpy")
     new_data = data[:, 2]
-    new_data = new_data[0:3]
+    #new_data = new_data[0:100]
+    labels = data[:, 1]
+    #labels = labels[0:100]
     print(new_data)
     print()
     p = PreProcess(lemma_norm=True, proper_norm=True, stopword_norm=True,
                    accented_norm=True, special_chars_norm=True, contractions_norm=False)
     pre_processed_data = p.fit(new_data)
     print(pre_processed_data)
-    ng = ngram_vectorization.Ngram(pos=False, ngram=True)
-    print(ng.fit(pre_processed_data, 2))
-
+    ng = ngram_vectorization.Ngram(pos=True, ngram=True)
+    final_data = ng.fit(pre_processed_data, 2)
+    final_data["Label"] = labels
+    print(final_data.head(5))
+    final_data.to_csv(path_or_buf=r"final_data.csv", index=False)
 
 
 if __name__ == '__main__':
